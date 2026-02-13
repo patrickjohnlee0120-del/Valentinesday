@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import NoButton from './NoButton';
+import { playSound } from '../utils/sounds';
 
 interface ValentineInvitationProps {
   onAccept: () => void;
@@ -10,6 +11,7 @@ const ValentineInvitation: React.FC<ValentineInvitationProps> = ({ onAccept }) =
   const [isExiting, setIsExiting] = useState(false);
 
   const handleAccept = () => {
+    playSound('pop');
     setIsExiting(true);
     setTimeout(onAccept, 500);
   };

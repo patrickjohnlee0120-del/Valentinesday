@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { playSound } from '../utils/sounds';
 
 interface EnvelopeProps {
   onFinished: () => void;
@@ -10,9 +11,11 @@ const Envelope: React.FC<EnvelopeProps> = ({ onFinished }) => {
 
   const handleOpen = () => {
     if (state !== 'closed') return;
+    
+    playSound('paper');
+    playSound('sparkle');
     setState('opening');
     
-    // Sequence: 1. Flap opens (600ms), 2. Wait a beat, 3. Vanish (600ms)
     setTimeout(() => {
       setState('vanishing');
       setTimeout(() => {
@@ -27,32 +30,24 @@ const Envelope: React.FC<EnvelopeProps> = ({ onFinished }) => {
         onClick={handleOpen}
         className="relative w-full h-full group"
       >
-        {/* Envelope Back */}
         <div className="absolute inset-0 bg-rose-100 shadow-xl rounded-sm"></div>
-        
-        {/* Interior shadow / detail */}
         <div className="absolute inset-2 bg-rose-50/50 rounded-sm"></div>
 
-        {/* Envelope Front Panels */}
         <div className="absolute inset-0 z-20 pointer-events-none">
-          {/* Left panel */}
           <div className="absolute inset-0" style={{
             clipPath: 'polygon(0% 0%, 50% 50%, 0% 100%)',
             backgroundColor: '#fecdd3'
           }}></div>
-          {/* Right panel */}
           <div className="absolute inset-0" style={{
             clipPath: 'polygon(100% 0%, 50% 50%, 100% 100%)',
             backgroundColor: '#fecdd3'
           }}></div>
-          {/* Bottom panel */}
           <div className="absolute inset-0" style={{
             clipPath: 'polygon(0% 100%, 50% 50%, 100% 100%)',
             backgroundColor: '#fda4af'
           }}></div>
         </div>
 
-        {/* Envelope Flap */}
         <div 
           className={`absolute top-0 left-0 right-0 h-1/2 z-30 transition-transform duration-700 ease-in-out origin-top ${state !== 'closed' ? 'rotate-x-180 -scale-y-100' : 'rotate-x-0'}`}
           style={{
@@ -62,7 +57,6 @@ const Envelope: React.FC<EnvelopeProps> = ({ onFinished }) => {
           }}
         ></div>
 
-        {/* Seal */}
         {state === 'closed' && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 transition-opacity duration-300">
             <svg className="w-12 h-12 text-white filter drop-shadow-md animate-pulse" fill="currentColor" viewBox="0 0 24 24">

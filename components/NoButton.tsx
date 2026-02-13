@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback, useRef } from 'react';
+import { playSound } from '../utils/sounds';
 
 interface NoButtonProps {
   onAccept: () => void;
@@ -11,6 +12,7 @@ const NoButton: React.FC<NoButtonProps> = ({ onAccept }) => {
   const [teaseText, setTeaseText] = useState<string | null>(null);
   const [isTransformed, setIsTransformed] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const escalatingMessages = [
     "Oops! I don’t think so 😜",
@@ -24,36 +26,45 @@ const NoButton: React.FC<NoButtonProps> = ({ onAccept }) => {
   const moveButton = useCallback(() => {
     if (isTransformed) return;
 
+    playSound('jump');
+
     const currentAttempt = attempts;
     
-    // Update message
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+
     setTeaseText(escalatingMessages[Math.min(currentAttempt, escalatingMessages.length - 1)]);
     
-    // Check for transformation
     if (currentAttempt >= 5) {
       setIsTransformed(true);
-      setPosition({ x: 0, y: 0 }); // Snap back to center
+      setPosition({ x: 0, y: 0 });
+      setTeaseText("NUU FOREVER TAYU BAWALL 😤💖");
       return;
     }
 
-    // Boundaries logic for 390px wide viewport
     const screenWidth = Math.min(window.innerWidth, 390);
     const screenHeight = Math.min(window.innerHeight, 844);
     
-    const margin = 100; 
-    const rangeX = (screenWidth / 2) - margin;
-    const rangeY = (screenHeight / 4) - margin;
+    const rangeX = (screenWidth / 2) - 80;
+    const rangeY = (screenHeight / 4) - 50;
 
-    // Ensure it's never perfectly at 0,0 during the game to keep it "moving"
     const randomX = (Math.random() - 0.5) * rangeX * 2;
     const randomY = (Math.random() - 0.5) * rangeY * 2;
 
     setPosition({ x: randomX, y: randomY });
     setAttempts((prev) => prev + 1);
+
+    if (currentAttempt < 5) {
+      timeoutRef.current = window.setTimeout(() => {
+        setTeaseText(null);
+      }, 1500);
+    }
   }, [attempts, isTransformed]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isTransformed) {
+      playSound('pop');
       onAccept();
       return;
     }
@@ -66,12 +77,14 @@ const NoButton: React.FC<NoButtonProps> = ({ onAccept }) => {
       className={`relative transition-all duration-700 ease-in-out z-50 flex items-center justify-center w-full pointer-events-none`}
       style={{ 
         transform: `translate(${position.x}px, ${position.y}px)`,
-        marginTop: isTransformed ? '0' : '0' 
       }}
     >
       <div className="relative pointer-events-auto">
-        {teaseText && !isTransformed && (
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-lg text-sm font-semibold text-rose-500 animate-message-pop border border-rose-100">
+        {teaseText && (
+          <div 
+            key={isTransformed ? 'final' : attempts}
+            className={`absolute -top-14 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-lg text-sm font-semibold border border-rose-100 ${isTransformed ? 'text-rose-600 animate-bounce' : 'text-rose-500 animate-message-pop'}`}
+          >
             {teaseText}
           </div>
         )}
@@ -94,14 +107,14 @@ const NoButton: React.FC<NoButtonProps> = ({ onAccept }) => {
 
       <style>{`
         @keyframes message-pop {
-          0% { opacity: 0; transform: translate(-50%, 10px) scale(0.8); }
-          20% { opacity: 1; transform: translate(-50%, -5px) scale(1.1); }
-          40% { transform: translate(-50%, 0) scale(1); }
-          80% { opacity: 1; }
-          100% { opacity: 0; transform: translate(-50%, -10px) scale(0.9); }
+          0% { opacity: 0; transform: translate(-50%, 15px) scale(0.85); }
+          15% { opacity: 1; transform: translate(-50%, -5px) scale(1.05); }
+          30% { transform: translate(-50%, 0) scale(1); }
+          80% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, -15px) scale(0.9); }
         }
         .animate-message-pop {
-          animation: message-pop 1.5s ease-out forwards;
+          animation: message-pop 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
         }
         @keyframes heart-beat {
           0%, 100% { transform: scale(1); }

@@ -1,18 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
+import { playSound } from '../utils/sounds';
 
 const Letter: React.FC = () => {
   const [typedText, setTypedText] = useState('');
-  const fullText = "Hi my love,\n\nFrom the moment I met you, my world became softer, brighter, and happier. Will you make me the luckiest person and be my Valentine?\n\nForever yours ❤️";
+  const fullText = "My dearest, Angelica\n\nFrom the moment I met you, my world became softer, brighter, and happier. Will you make me the luckiest and hapiest person and be my Valentine?\n\nForever yours\nBebubooboobear";
 
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
       setTypedText(fullText.slice(0, i));
       i++;
-      if (i > fullText.length) clearInterval(interval);
+      if (i > fullText.length) {
+        clearInterval(interval);
+        playSound('ding');
+      }
     }, 45);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (

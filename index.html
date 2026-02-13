@@ -16,28 +16,26 @@
       }
       body {
         font-family: 'Poppins', sans-serif;
-        background-color: #FFF9F3;
+        background-color: #ffe4e6;
         overflow: hidden; /* Strict no-scroll */
         height: 100dvh;
         width: 100vw;
         margin: 0;
         padding: 0;
         touch-action: manipulation;
+        position: fixed; /* Lock for iOS Safari */
       }
       #root {
         height: 100dvh;
         width: 100vw;
         display: flex;
         flex-direction: column;
+        position: relative;
+        z-index: 1;
       }
       .font-pacifico {
         font-family: 'Pacifico', cursive;
       }
-      /* Smooth transitions */
-      .fade-enter { opacity: 0; transform: scale(0.9); }
-      .fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 500ms, transform 500ms; }
-      .fade-exit { opacity: 1; }
-      .fade-exit-active { opacity: 0; transition: opacity 400ms; }
     </style>
     <script type="importmap">
 {
