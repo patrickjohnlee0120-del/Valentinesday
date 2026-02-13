@@ -16,7 +16,7 @@ const NoButton: React.FC<NoButtonProps> = ({ onAccept }) => {
 
   const escalatingMessages = [
     "Oops! I don’t think so 😜",
-    "Wait… sure ka ba dyan bebi? 🥺",
+    "Wait… sure ka ba dyann? 🥺",
     "Lahh… 💔",
     "Noo?:(( 😢",
     "NOOOOOOO:(",
